@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Invoice #{{ invoice.id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: black;
+        }
+
+        .invoice-container {
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .invoice-details {
+            margin-bottom: 20px;
+        }
+
+        .invoice-details p {
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .grand-total {
+            text-align: right;
+            margin-top: 20px;
+            font-size: 20px;
+        }
+
+        @media print {
+            button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<body>
+    <div class="invoice-container">
+        <h2>Purchase Invoice #{{ invoice.id }}</h2>
+        
+        <div class="invoice-details">
+            <p><strong>Date:</strong> {{ invoice.date }}</p>
+            {% if invoice.remark %}
+            <p><strong>Remark:</strong> {{ invoice.remark }}</p>
+            {% endif %}
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Part Number</th>
+                    <th>A/U</th>
+                    <th>Vehicle</th>
+                    <th>PO Number</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.product.part_number }}</td>
+                    <td>{% if item.product.au %}Yes{% else %}No{% endif %}</td>
+                    <td>{{ item.product.vehicle }}</td>
+                    <td>{{ item.product.po_number }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>৳{{ item.selling_price }}</td>
+                    <td>৳{{ item.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="grand-total">
+            <strong>Grand Total: ৳{{ total }}</strong>
+        </div>
+
+        <button onclick="window.print()" class="btn btn-primary">Print Invoice</button>
+    </div>
+</body>
+</html>

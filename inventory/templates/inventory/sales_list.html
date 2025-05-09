@@ -1,0 +1,31 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Sales Invoices</h2>
+  <a href="{% url 'sales_add' %}" class="btn btn-success mb-3">Add New Sale</a>
+  <table class="table table-bordered table-hover table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Invoice #</th>
+        <th>Date</th>
+        <th>TT</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for invoice in sales %}
+      <tr>
+        <td>{{ invoice.id }}</td>
+        <td>{{ invoice.date }}</td>
+        <td>{{ invoice.tt }}</td>
+        <td>
+          <a href="{% url 'sales_invoice' invoice.id %}" class="btn btn-info btn-sm">View</a>
+          <a href="{% url 'sales_return' invoice.id %}" class="btn btn-warning btn-sm">Return</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+

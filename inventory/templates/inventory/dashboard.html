@@ -1,0 +1,76 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="container-fluid">
+  <h2 class="mb-4">Dashboard</h2>
+
+    <form method="GET" action="{% url 'dashboard' %}">
+    <div class="mb-4">
+      <input type="text" name="q" class="form-control" placeholder="Search Inventory" value="{{ request.GET.q }}" aria-label="Search Inventory">
+    </div>
+  </form>
+
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card text-white bg-success">
+        <div class="card-body">
+          <h5 class="card-title">Stock Value</h5>
+          <p class="card-text">৳{{ total_stock_value }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-primary">
+        <div class="card-body">
+          <h5 class="card-title">Profit</h5>
+          <p class="card-text">৳{{ total_profit }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-danger">
+        <div class="card-body">
+          <h5 class="card-title">Expenses</h5>
+          <p class="card-text">৳{{ total_expenses }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h4>Current Inventory</h4>
+    <table class="table table-bordered table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Product Name</th>
+          <th>Part Number</th>
+          <th>A/U</th>
+          <th>Vehicle</th>
+          <th>PO Number</th>
+          <th>Quantity</th>
+          <th>Rate</th>
+          <th>Cost</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inventory in inventories %}
+        <tr>
+          <td>{{ inventory.product.name }}</td>
+          <td>{{ inventory.product.part_number }}</td>
+          <td>{% if inventory.product.au %}Yes{% else %}No{% endif %}</td>
+          <td>{{ inventory.product.vehicle }}</td>
+          <td>{{ inventory.product.po_number }}</td>
+          <td>{{ inventory.quantity }}</td>
+          <td>৳{{ inventory.rate }}</td>
+          <td>৳{{ inventory.cost }}</td>
+          <td>৳{{ inventory.chs }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" class="text-center">No products found with quantity > 0</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </table>
+</div>
+{% endblock %}

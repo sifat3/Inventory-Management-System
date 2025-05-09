@@ -1,0 +1,32 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Edit Expense</h2>
+  
+  <form method="POST" class="card p-4 shadow-sm">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="date" class="form-label">Date:</label>
+      <input type="date" class="form-control" id="date" name="date" value="{{ expense.date }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="reason" class="form-label">Reason:</label>
+      <input type="text" class="form-control" id="reason" name="reason" value="{{ expense.reason }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="amount" class="form-label">Amount (৳):</label>
+      <input type="number" class="form-control" id="amount" name="amount" value="{{ expense.amount }}" step="0.01" required>
+    </div>
+
+    <button type="submit" class="btn btn-success">Update Expense</button>
+  </form>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-info mt-3">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}
