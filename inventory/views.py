@@ -66,14 +66,21 @@ def dashboard_view(request):
     })
 
 
+
 @login_required(login_url="/")
 def product_list_view(request):
-    query = request.GET.get("q")
+    query = request.GET.get('q', '')
     if query:
-        products = Product.objects.filter(name__icontains=query)
+        products = Product.objects.filter(
+            Q(name__icontains=query) |  # Search in product name
+            Q(part_number__icontains=query)  # Search in part number
+        )
     else:
         products = Product.objects.all()
+
     return render(request, 'inventory/product_list.html', {'products': products})
+
+
 
 # Add Product
 from django.db import IntegrityError
@@ -128,12 +135,20 @@ def product_delete_view(request, pk):
 # List all expenses
 @login_required(login_url="/")
 def expense_list_view(request):
-    expenses = Expense.objects.order_by('-date')
+    query = request.GET.get('q', '')
+    if query:
+        expenses = Expense.objects.filter(
+            Q(reason__icontains=query) # Search in expense reason
+        ).order_by('-date') 
+    else:
+        expenses = Expense.objects.all().order_by('-date')
     total_expense = sum(exp.amount for exp in expenses)
     return render(request, 'inventory/expense_list.html', {
         'expenses': expenses,
         'total_expense': total_expense
     })
+
+
 
 # Add expense
 @login_required(login_url="/")
@@ -169,19 +184,28 @@ def expense_delete_view(request, pk):
     return redirect('expense_list')
 
 
+
 from django.utils import timezone
 
 # View all purchases
 @login_required(login_url="/")
 def purchase_list_view(request):
+    query = request.GET.get('q', '')
+    if query:
+        purchases = PurchaseInvoice.objects.filter(
+            Q(invoice_number__icontains=query)  # Search in invoice number
+        ).order_by('-date')
+    else:
+        purchases = PurchaseInvoice.objects.all().order_by('-date')
     now = timezone.now()
     first_day_of_current_month = now.replace(day=1)
     current_month_invoices = PurchaseInvoice.objects.filter(date__gte=first_day_of_current_month)
     total_purchase_current_month = sum(
         item.total for invoice in current_month_invoices for item in PurchaseItem.objects.filter(invoice=invoice)
     )
-    purchases = PurchaseInvoice.objects.all().order_by('-date')
     return render(request, 'inventory/purchase_list.html', {'purchases': purchases, 'total_purchase_current_month': total_purchase_current_month})
+
+
 
 # Add new purchase
 @login_required(login_url="/")
@@ -253,14 +277,20 @@ def purchase_return_view(request, invoice_id):
 # View sales invoices
 @login_required(login_url="/")
 def sales_list_view(request):
+    query = request.GET.get('q', '')
+    if query:
+        sales = SalesInvoice.objects.filter(
+            Q(invoice_number__icontains=query) |  # Search in sales invoice number
+            Q(tt__icontains=query)  # Search in TT field
+        ).order_by('-date')
+    else:
+        sales = SalesInvoice.objects.all().order_by('-date')
     now = timezone.now()
     first_day_of_current_month = now.replace(day=1)
     current_month_invoices = SalesInvoice.objects.filter(date__gte=first_day_of_current_month)
     total_sales_current_month = sum(
         item.total for invoice in current_month_invoices for item in SalesItem.objects.filter(invoice=invoice)
     )
-
-    sales = SalesInvoice.objects.all().order_by('-date')
     return render(request, 'inventory/sales_list.html', {'sales': sales, 'total_sales_current_month': total_sales_current_month})
 
 @login_required(login_url="/")

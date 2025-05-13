@@ -77,8 +77,8 @@
         <table>
             <thead>
                 <tr>
-                    <th>Product</th>
                     <th>Part Number</th>
+                    <th>Product</th>
                     <th>A/U</th>
                     <th>Vehicle</th>
                     <th>Quantity</th>
@@ -91,8 +91,8 @@
             <tbody>
                 {% for item in items %}
                 <tr>
-                    <td>{{ item.product.name }}</td>
                     <td>{{ item.product.part_number }}</td>
+                    <td>{{ item.product.name }}</td>
                     <td>{% if item.product.au %}Set{% else %}No{% endif %}</td>
                     <td>{{ item.product.vehicle }}</td>
                     <td>{{ item.quantity }}</td>

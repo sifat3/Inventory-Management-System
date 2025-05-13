@@ -3,34 +3,35 @@
 <div class="container mt-5">
   <h2 class="mb-4 text-center">Add Purchase</h2>
 
-  <form method="POST">
+  <!-- Add Purchase Form -->
+  <form method="POST" class="card p-4 shadow-sm">
     {% csrf_token %}
     
-    <!-- Product Section -->
-    <div id="product-section">
+       <div id="product-section">
       <div class="product-row mb-3">
         <div class="row">
           <div class="col-md-4">
-            <label for="product">Product</label>
-            <select name="product" class="form-control" required>
+            <label for="product" class="form-label">Product</label>
+            <input list="products" name="product" id="product" class="form-control" required placeholder="Search for a product">
+            <datalist id="products">
               {% for p in products %}
-                <option value="{{ p.id }}">{{ p.name }} ({{ p.part_number }})</option>
+                <option value="{{ p.id }}" label="{{ p.name }}-{{p.part_number}}.">
               {% endfor %}
-            </select>
+            </datalist>
           </div>
-          
-          <div class="col-md-2">
-            <label for="rate">Rate</label>
+
+          <div class="col-md-3">
+            <label for="rate" class="form-label">Rate</label>
             <input type="number" name="rate" class="form-control" placeholder="Rate" required>
           </div>
 
-          <div class="col-md-2">
-            <label for="cost">Cost</label>
+          <div class="col-md-3">
+            <label for="cost" class="form-label">Cost</label>
             <input type="number" name="cost" class="form-control" placeholder="Cost" required>
           </div>
 
           <div class="col-md-2">
-            <label for="quantity">Quantity</label>
+            <label for="quantity" class="form-label">Quantity</label>
             <input type="number" name="quantity" class="form-control" placeholder="Quantity" required>
           </div>
 
@@ -51,6 +52,12 @@
       <button type="button" class="btn btn-secondary" onclick="addRow()">Add Another Product</button>
     </div>
 
+    <!-- TT Text Field (Optional) -->
+    <div class="mt-4">
+      <label for="tt" class="form-label">TT (Optional)</label>
+      <input type="text" name="tt" class="form-control" placeholder="Enter TT (Optional)">
+    </div>
+
     <!-- Submit Button -->
     <div class="text-center mt-4">
       <button type="submit" class="btn btn-primary">Submit Purchase</button>
@@ -59,49 +66,43 @@
 </div>
 
 <script>
-// Function to search products dynamically
-function searchProducts() {
-  const query = document.getElementById('product-search').value;
+  // Function to add another product row
+  function addRow() {
+    const section = document.getElementById('product-section');
+    const row = section.querySelector('.product-row').cloneNode(true);
 
-  if (query.length >= 3) { // Start searching if the query is at least 3 characters long
-    fetch(`/search/products/?q=${query}`)
-      .then(response => response.json())
-      .then(data => {
-        const productSelect = document.getElementById('product-select');
-        productSelect.innerHTML = ''; // Clear previous results
+    // Clear input values in the new row
+    const inputs = row.querySelectorAll('input');
+    inputs.forEach(input => input.value = '');
 
-        data.products.forEach(product => {
-          const option = document.createElement('option');
-          option.value = product.id;
-          option.textContent = `${product.name} (Available: ${product.quantity})`;
-          productSelect.appendChild(option);
-        });
-      })
-      .catch(error => console.error('Error fetching products:', error));
+    section.appendChild(row);
   }
-}
 
-// Function to add another product row
-function addRow() {
-  const section = document.getElementById('product-section');
-  const row = section.querySelector('.product-row').cloneNode(true);
-
-  // Clear input values in the new row
-  const inputs = row.querySelectorAll('input');
-  inputs.forEach(input => input.value = '');
-  row.querySelector('#product-search').value = ''; // Clear search input
-  section.appendChild(row);
-}
-
-// Function to remove a product row
-function removeRow(button) {
-  const section = document.getElementById('product-section');
-  if (section.querySelectorAll('.product-row').length > 1) {
-    button.parentElement.parentElement.remove();
-  } else {
-    alert("At least one product row must remain.");
+  // Function to remove a product row
+  function removeRow(button) {
+    const section = document.getElementById('product-section');
+    if (section.querySelectorAll('.product-row').length > 1) {
+      button.parentElement.parentElement.remove();
+    } else {
+      alert("At least one product row must remain.");
+    }
   }
-}
+
+  // Capture the product ID when the user selects a product
+  document.getElementById('product_name').addEventListener('input', function() {
+    var productName = this.value;
+    var datalist = document.getElementById('products');
+    var options = datalist.options;
+    
+    // Loop through datalist options to match the name
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].value === productName) {
+        // When a match is found, set the hidden input to the product ID
+        document.getElementById('product_id').value = options[i].getAttribute('data-id');
+        break;
+      }
+    }
+  });
 </script>
 
 {% block extra_css %}
@@ -136,6 +137,7 @@ function removeRow(button) {
   }
 
   .remove-btn {
+    width: 100%;
     font-size: 14px;
     padding: 6px 10px;
     text-align: center;
@@ -149,9 +151,20 @@ function removeRow(button) {
     background-color: #c0392b;
   }
 
-  /* Search input styling */
-  .input-group-text {
-    cursor: pointer;
+  /* Style for 'Add Another Product' and Submit buttons */
+  .btn-secondary {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+
+  .btn-primary {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+
+  /* Styling for the TT text field */
+  .form-control {
+    margin-top: 10px;
   }
 </style>
 {% endblock %}

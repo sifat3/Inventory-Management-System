@@ -13,11 +13,12 @@
         <div class="row">
           <div class="col-md-4">
             <label for="product" class="form-label">Product</label>
-            <select name="product" class="form-control" required>
+            <input list="products" name="product" id="product" class="form-control" required placeholder="Search for a product">
+            <datalist id="products">
               {% for p in products %}
-                <option value="{{ p.product.id }}">{{ p.product.name }} (Available: {{ p.quantity }})</option>
+                <option value="{{ p.product.id }}" label="{{ p.product.name }}-{{p.product.part_number}} (Available: {{ p.quantity }})">
               {% endfor %}
-            </select>
+            </datalist>
           </div>
           
           <div class="col-md-3">
@@ -53,7 +54,6 @@
       <input type="text" name="tt" class="form-control" placeholder="Enter TT (Optional)">
     </div>
 
-
     <!-- Submit Button -->
     <div class="text-center mt-4">
       <button type="submit" class="btn btn-primary">Submit Sale</button>
@@ -62,27 +62,27 @@
 </div>
 
 <script>
-// Function to add another product row
-function addRow() {
-  const section = document.getElementById('product-section');
-  const row = section.querySelector('.product-row').cloneNode(true);
+  // Function to add another product row
+  function addRow() {
+    const section = document.getElementById('product-section');
+    const row = section.querySelector('.product-row').cloneNode(true);
 
-  // Clear input values in the new row
-  const inputs = row.querySelectorAll('input');
-  inputs.forEach(input => input.value = '');
+    // Clear input values in the new row
+    const inputs = row.querySelectorAll('input');
+    inputs.forEach(input => input.value = '');
 
-  section.appendChild(row);
-}
-
-// Function to remove a product row
-function removeRow(button) {
-  const section = document.getElementById('product-section');
-  if (section.querySelectorAll('.product-row').length > 1) {
-    button.parentElement.parentElement.remove();
-  } else {
-    alert("At least one product row must remain.");
+    section.appendChild(row);
   }
-}
+
+  // Function to remove a product row
+  function removeRow(button) {
+    const section = document.getElementById('product-section');
+    if (section.querySelectorAll('.product-row').length > 1) {
+      button.parentElement.parentElement.remove();
+    } else {
+      alert("At least one product row must remain.");
+    }
+  }
 </script>
 
 {% block extra_css %}

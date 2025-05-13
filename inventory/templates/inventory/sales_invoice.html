@@ -19,6 +19,7 @@
   <table class="table table-bordered table-striped table-hover">
     <thead class="table-dark">
       <tr>
+        <th>Part Number</th>
         <th>Product</th>
         <th>Quantity</th>
         <th>Price</th>
@@ -29,6 +30,7 @@
     <tbody>
       {% for item in items %}
       <tr>
+        <td>{{ item.product.part_number }}</td>
         <td>{{ item.product.name }}</td>
         <td>{{ item.quantity }}</td>
         <td>৳{{ item.selling_price }}</td>

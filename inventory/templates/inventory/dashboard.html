@@ -40,6 +40,7 @@
     <table class="table table-bordered table-striped table-hover">
       <thead class="table-dark">
         <tr>
+          <th>Serial No.</th>
           <th>Part Number</th>
           <th>Product Name</th>
           <th>A/U</th>
@@ -55,6 +56,7 @@
       <tbody>
         {% for inventory in inventories %}
         <tr>
+          <td>{{ forloop.counter }}</td>
           <td>{{ inventory.product.part_number }}</td>
           <td>{{ inventory.product.name }}</td>
           <td>{% if inventory.product.au %}Set{% else %}No{% endif %}</td>
