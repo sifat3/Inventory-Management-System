@@ -218,7 +218,19 @@ def purchase_add_view(request):
         quantities = request.POST.getlist('quantity')
         remarks = request.POST.getlist('remark')
 
-        invoice = PurchaseInvoice.objects.create()
+        name = request.POST.get('name')
+        address = request.POST.get('address')
+        phone = request.POST.get('phone')
+        source_of_purchase = request.POST.get('source_of_purchase')
+        voucher_no = request.POST.get('voucher_no')
+
+        invoice = PurchaseInvoice.objects.create(
+            name=name,
+            address=address,
+            phone=phone,
+            source_of_purchase=source_of_purchase,
+            voucher_no=voucher_no
+        )
 
         for idx, pid in enumerate(product_ids):
             product = Product.objects.get(id=pid)

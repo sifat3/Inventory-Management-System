@@ -38,6 +38,11 @@ class Expense(models.Model):
 
 class PurchaseInvoice(models.Model):
     date = models.DateTimeField(auto_now_add=True)
+    name = models.CharField(max_length=100)  # Name
+    address = models.TextField()  # Address
+    phone = models.CharField(max_length=15)  # Phone
+    source_of_purchase = models.CharField(max_length=100)  # Source of Purchase
+    voucher_no = models.CharField(max_length=50)  # Voucher No.
     received = models.BooleanField(default=False)  # Track if item is received
     invoice_number = models.CharField(max_length=20, unique=True, blank=True)
 

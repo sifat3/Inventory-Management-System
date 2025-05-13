@@ -21,6 +21,7 @@
         <th>Serial No.</th>
         <th>Invoice</th>
         <th>Date</th>
+        <th>Source Of Purchase</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -30,6 +31,7 @@
         <td>{{ forloop.counter }}</td>
         <td>{{ invoice.invoice_number }}</td>
         <td>{{ invoice.date }}</td>
+        <td>{{ invoice.source_of_purchase }}</td>
         <td>
           <a href="{% url 'purchase_invoice' invoice.id %}" class="btn btn-info btn-sm">View</a>
           <a href="{% url 'purchase_return' invoice.id %}" class="btn btn-warning btn-sm">Return</a>
