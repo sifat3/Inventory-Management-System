@@ -87,7 +87,7 @@ def product_add_view(request):
         vehicle = request.POST.get('vehicle', '')  # Get vehicle info (can be empty)
 
         try:
-            Product.objects.create(name=name, part_number=part_number, au=au, vehicle=vehicle, po_number=po_number)
+            Product.objects.create(name=name, part_number=part_number, au=au, vehicle=vehicle)
             messages.success(request, 'Product added successfully.')
             return redirect('product_list')
         except IntegrityError:
