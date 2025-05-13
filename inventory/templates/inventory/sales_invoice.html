@@ -7,12 +7,6 @@
     <div class="col-md-6">
       <p><strong>Date:</strong> {{ invoice.date }}</p>
     </div>
-    <div class="col-md-6">
-      <p><strong>TT:</strong> {{ invoice.tt }}</p>
-      {% if invoice.remark %}
-      <p><strong>Remark:</strong> {{ invoice.remark }}</p>
-    {% endif %}
-    </div>
   </div>
 
   <!-- Table for items -->
@@ -25,6 +19,7 @@
         <th>Price</th>
         <th>Total</th>
         <th>Remark</th>
+        <th>IT No.</th>
       </tr>
     </thead>
     <tbody>
@@ -36,6 +31,7 @@
         <td>৳{{ item.selling_price }}</td>
         <td>৳{{ item.total }}</td>
         <td>{{ item.remark }}</td>
+        <td>{{ item.it_no }}</td>
       </tr>
       {% endfor %}
     </tbody>

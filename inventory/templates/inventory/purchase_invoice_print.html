@@ -90,8 +90,10 @@
                     <th>Product</th>
                     <th>A/U</th>
                     <th>Vehicle</th>
+                    <th>Rate</th>
+                    <th>Cost</th>
+                    <th>CHS</th>
                     <th>Quantity</th>
-                    <th>Price</th>
                     <th>Total</th>
                     <th>Remark</th>
 
@@ -104,8 +106,10 @@
                     <td>{{ item.product.name }}</td>
                     <td>{% if item.product.au %}Set{% else %}No{% endif %}</td>
                     <td>{{ item.product.vehicle }}</td>
-                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.rate }}</td>
+                    <td>৳{{ item.cost }}</td>
                     <td>৳{{ item.chs }}</td>
+                    <td>{{ item.quantity }}</td>
                     <td>৳{{ item.total }}</td>
                     <td>{{ item.remark }}</td>
                 </tr>

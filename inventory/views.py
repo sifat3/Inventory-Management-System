@@ -312,20 +312,22 @@ def sales_add_view(request):
         product_ids = request.POST.getlist('product')
         quantities = request.POST.getlist('quantity')
         prices = request.POST.getlist('price')
-        tt_value = request.POST.get('tt', '')  # TT is now a text field, can be empty
-        remarks = request.POST.getlist('remark') 
+        remarks = request.POST.getlist('remark')
+        it_numbers = request.POST.getlist('it_no') 
 
-        # If 'tt' field is provided, store the value, otherwise None
-        tt_flag = tt_value if tt_value else None
-
-        # Create the sales invoice with optional TT value
-        invoice = SalesInvoice.objects.create(tt=tt_flag)
+        name = request.POST.get('name')
+        address = request.POST.get('address')
+        phone = request.POST.get('phone')
+        invoice = SalesInvoice.objects.create(name=name,
+            address=address,
+            phone=phone)
 
         for idx, pid in enumerate(product_ids):
             product = Product.objects.get(id=pid)
             quantity = int(quantities[idx])
             price = float(prices[idx])
             remark = remarks[idx]
+            it_no = it_numbers[idx]
 
             # Create sale item
             SalesItem.objects.create(
@@ -333,7 +335,8 @@ def sales_add_view(request):
                 product=product,
                 quantity=quantity,
                 selling_price=price,
-                remark=remark 
+                remark=remark,
+                it_no=it_no 
             )
 
             # Update inventory

@@ -71,10 +71,12 @@
         
         <div class="invoice-details">
             <p><strong>Date:</strong> {{ invoice.date }}</p>
-            <p><strong>TT:</strong> {{ invoice.tt }}</p>
-            {% if invoice.remark %}
-            <p><strong>Remark:</strong> {{ invoice.remark }}</p>
-            {% endif %}
+        </div>
+        <div class="invoice-details">
+            <p><strong>Name:</strong> {{ invoice.name }}</p>
+        </div>
+        <div class="invoice-details">
+            <p><strong>Address:</strong> {{ invoice.address }}</p><p><strong>Phone:</strong> {{ invoice.phone }}</p>
         </div>
 
         <table>
@@ -88,6 +90,7 @@
                     <th>Price</th>
                     <th>Total</th>
                     <th>Remark</th>
+                    <th>IT No.</th>
                 </tr>
             </thead>
             <tbody>
@@ -101,6 +104,7 @@
                     <td>৳{{ item.selling_price }}</td>
                     <td>৳{{ item.total }}</td>
                     <td>{{ item.remark }}</td>
+                    <td>{{ item.it_no }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

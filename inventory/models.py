@@ -92,7 +92,9 @@ class PurchaseItem(models.Model):
 
 class SalesInvoice(models.Model):
     date = models.DateTimeField(auto_now_add=True)
-    tt = models.TextField(null=True, blank=True)
+    name = models.CharField(max_length=100)  # Name
+    address = models.TextField()  # Address
+    phone = models.CharField(max_length=15)  # Phone
     invoice_number = models.CharField(max_length=20, unique=True, blank=True)
 
 
@@ -129,6 +131,7 @@ class SalesItem(models.Model):
     quantity = models.PositiveIntegerField()
     selling_price = models.DecimalField(max_digits=10, decimal_places=2)
     remark = models.TextField(null=True, blank=True)  # Remark field for the Sell (Sales)
+    it_no = models.CharField(max_length=100, blank=True, null=True)
 
     @property
     def total(self):
