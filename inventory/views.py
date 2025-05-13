@@ -32,7 +32,7 @@ def dashboard_view(request):
             Q(product__name__icontains=query) |  # Search in product name
             Q(product__part_number__icontains=query) |  # Search in product part number
             Q(product__vehicle__icontains=query) |  # Search in product vehicle field
-            Q(product__po_number__icontains=query),  # Search in product PO number field
+            Q(location__icontains=query),  # Search in product PO number field
             quantity__gt=0  # Only include products with quantity > 0
         )
     else:
