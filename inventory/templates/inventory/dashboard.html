@@ -40,29 +40,38 @@
     <table class="table table-bordered table-striped table-hover">
       <thead class="table-dark">
         <tr>
-          <th>Product Name</th>
           <th>Part Number</th>
+          <th>Product Name</th>
           <th>A/U</th>
           <th>Vehicle</th>
-          <th>PO Number</th>
           <th>Quantity</th>
           <th>Rate</th>
           <th>Cost</th>
           <th>Total</th>
+          <th>Location</th>
+          <th>Remark</th>
         </tr>
       </thead>
       <tbody>
         {% for inventory in inventories %}
         <tr>
-          <td>{{ inventory.product.name }}</td>
           <td>{{ inventory.product.part_number }}</td>
-          <td>{% if inventory.product.au %}Yes{% else %}No{% endif %}</td>
+          <td>{{ inventory.product.name }}</td>
+          <td>{% if inventory.product.au %}Set{% else %}No{% endif %}</td>
           <td>{{ inventory.product.vehicle }}</td>
-          <td>{{ inventory.product.po_number }}</td>
           <td>{{ inventory.quantity }}</td>
           <td>৳{{ inventory.rate }}</td>
           <td>৳{{ inventory.cost }}</td>
           <td>৳{{ inventory.chs }}</td>
+          <td>
+            <form method="POST" action="{% url 'dashboard' %}">
+              {% csrf_token %}
+              <input type="hidden" name="inventory_id" value="{{ inventory.id }}">
+              <input type="text" name="location" value="{{ inventory.location }}" class="form-control" placeholder="Update location">
+              <button type="submit" name="update_location" class="btn btn-sm btn-primary mt-2">Update Location</button>
+            </form>
+          </td>
+          <td>{{ inventory.remark }}</td>
         </tr>
         {% empty %}
         <tr>

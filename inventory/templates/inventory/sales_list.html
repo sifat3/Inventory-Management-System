@@ -2,11 +2,14 @@
 {% block content %}
 <div class="container mt-4">
   <h2 class="mb-4">Sales Invoices</h2>
+  <div class="alert alert-info">
+    <strong>Total Sales for the Current Month:</strong> ৳{{ total_sales_current_month }}
+  </div>
   <a href="{% url 'sales_add' %}" class="btn btn-success mb-3">Add New Sale</a>
   <table class="table table-bordered table-hover table-striped">
     <thead class="table-dark">
       <tr>
-        <th>Invoice #</th>
+        <th>Invoice</th>
         <th>Date</th>
         <th>TT</th>
         <th>Actions</th>
@@ -15,7 +18,7 @@
     <tbody>
       {% for invoice in sales %}
       <tr>
-        <td>{{ invoice.id }}</td>
+        <td>{{ invoice.invoice_number }}</td>
         <td>{{ invoice.date }}</td>
         <td>{{ invoice.tt }}</td>
         <td>

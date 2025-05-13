@@ -34,6 +34,11 @@
             <input type="number" name="quantity" class="form-control" placeholder="Quantity" required>
           </div>
 
+          <div class="col-md-2">
+            <label for="remark" class="form-label">Remark</label>
+            <input type="text" name="remark" class="form-control" placeholder="Remark">
+          </div>
+
           <div class="col-md-2 d-flex align-items-end">
             <button type="button" class="btn btn-danger remove-btn" onclick="removeRow(this)">Remove</button>
           </div>
@@ -44,12 +49,6 @@
     <!-- Add Another Product Button -->
     <div class="text-center">
       <button type="button" class="btn btn-secondary" onclick="addRow()">Add Another Product</button>
-    </div>
-
-    <!-- Remark Text Field -->
-    <div class="mt-4">
-      <label for="remark" class="form-label">Remark (Optional)</label>
-      <textarea name="remark" class="form-control" placeholder="Enter any remarks (Optional)"></textarea>
     </div>
 
     <!-- Submit Button -->

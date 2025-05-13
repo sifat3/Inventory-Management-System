@@ -1,14 +1,11 @@
 {% extends 'inventory/base.html' %}
 {% block content %}
 <div class="container mt-4" id="invoice">
-  <h2 class="mb-4">Purchase Invoice #{{ invoice.id }}</h2>
+  <h2 class="mb-4">Purchase Invoice #{{ invoice.invoice_number }}</h2>
   
   <div class="row mb-4">
     <div class="col-md-6">
       <p><strong>Date:</strong> {{ invoice.date }}</p>
-      {% if invoice.remark %}
-      <p><strong>Remark:</strong> {{ invoice.remark }}</p>
-      {% endif %}
     </div>
   </div>
 
@@ -22,6 +19,7 @@
         <th>Quantity</th>
         <th>CHS</th>
         <th>Total</th>
+        <th>Remark</th>
       </tr>
     </thead>
     <tbody>
@@ -33,6 +31,7 @@
         <td>{{ item.quantity }}</td>
         <td>৳{{ item.chs }}</td>
         <td>৳{{ item.total }}</td>
+        <td>{{ item.remark }}</td>
       </tr>
       {% endfor %}
     </tbody>

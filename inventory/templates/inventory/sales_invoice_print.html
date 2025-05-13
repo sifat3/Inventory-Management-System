@@ -67,7 +67,7 @@
 </head>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <div class="invoice-container">
-        <h2>Sales Invoice #{{ invoice.id }}</h2>
+        <h2>Sales Invoice #{{ invoice.invoice_number }}</h2>
         
         <div class="invoice-details">
             <p><strong>Date:</strong> {{ invoice.date }}</p>
@@ -84,10 +84,10 @@
                     <th>Part Number</th>
                     <th>A/U</th>
                     <th>Vehicle</th>
-                    <th>PO Number</th>
                     <th>Quantity</th>
                     <th>Price</th>
                     <th>Total</th>
+                    <th>Remark</th>
                 </tr>
             </thead>
             <tbody>
@@ -95,12 +95,12 @@
                 <tr>
                     <td>{{ item.product.name }}</td>
                     <td>{{ item.product.part_number }}</td>
-                    <td>{% if item.product.au %}Yes{% else %}No{% endif %}</td>
+                    <td>{% if item.product.au %}Set{% else %}No{% endif %}</td>
                     <td>{{ item.product.vehicle }}</td>
-                    <td>{{ item.product.po_number }}</td>
                     <td>{{ item.quantity }}</td>
                     <td>৳{{ item.selling_price }}</td>
                     <td>৳{{ item.total }}</td>
+                    <td>{{ item.remark }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

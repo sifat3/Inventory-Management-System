@@ -39,6 +39,20 @@ def dashboard_view(request):
         # If no search query, show products with quantity > 0
         inventories = Inventory.objects.filter(quantity__gt=0)
 
+
+    if request.method == 'POST' and 'update_location' in request.POST:
+        inventory_id = request.POST.get('inventory_id')
+        new_location = request.POST.get('location')
+
+        # Update the location of the inventory item
+        inventory = Inventory.objects.get(id=inventory_id)
+        inventory.location = new_location
+        inventory.save()
+
+        messages.success(request, f"Location updated successfully for {inventory.product.name}.")
+        return redirect('dashboard')
+    
+
     total_stock_value = sum([inventory.stock_value for inventory in Inventory.objects.all()])
     total_profit = sum([(sales_item.selling_price - (sales_item.product.inventory.rate + sales_item.product.inventory.cost)) * sales_item.quantity for sales_item in SalesItem.objects.all()])
     total_expenses = Expense.objects.aggregate(total=models.Sum('amount'))['total'] or 0
@@ -71,7 +85,6 @@ def product_add_view(request):
         part_number = request.POST['part_number']
         au = 'au' in request.POST  # Check if 'au' checkbox is checked (Boolean Yes/No)
         vehicle = request.POST.get('vehicle', '')  # Get vehicle info (can be empty)
-        po_number = request.POST.get('po_number', '')  # Get PO No. (can be empty)
 
         try:
             Product.objects.create(name=name, part_number=part_number, au=au, vehicle=vehicle, po_number=po_number)
@@ -91,7 +104,6 @@ def product_edit_view(request, pk):
         product.part_number = request.POST['part_number']
         product.au = 'au' in request.POST  # Checkbox for A/U (Yes/No)
         product.vehicle = request.POST.get('vehicle', '')  # Get vehicle info (can be empty)
-        product.po_number = request.POST.get('po_number', '')  # Get PO No. (can be empty)
 
         try:
             product.save()
@@ -157,13 +169,19 @@ def expense_delete_view(request, pk):
     return redirect('expense_list')
 
 
-
+from django.utils import timezone
 
 # View all purchases
 @login_required(login_url="/")
 def purchase_list_view(request):
+    now = timezone.now()
+    first_day_of_current_month = now.replace(day=1)
+    current_month_invoices = PurchaseInvoice.objects.filter(date__gte=first_day_of_current_month)
+    total_purchase_current_month = sum(
+        item.total for invoice in current_month_invoices for item in PurchaseItem.objects.filter(invoice=invoice)
+    )
     purchases = PurchaseInvoice.objects.all().order_by('-date')
-    return render(request, 'inventory/purchase_list.html', {'purchases': purchases})
+    return render(request, 'inventory/purchase_list.html', {'purchases': purchases, 'total_purchase_current_month': total_purchase_current_month})
 
 # Add new purchase
 @login_required(login_url="/")
@@ -174,35 +192,38 @@ def purchase_add_view(request):
         rates = request.POST.getlist('rate')
         costs = request.POST.getlist('cost')
         quantities = request.POST.getlist('quantity')
-        remark = request.POST.get('remark', '')  # Capture the remark
+        remarks = request.POST.getlist('remark')
 
-        invoice = PurchaseInvoice.objects.create(remark=remark)
+        invoice = PurchaseInvoice.objects.create()
 
         for idx, pid in enumerate(product_ids):
             product = Product.objects.get(id=pid)
             rate = float(rates[idx])
             cost = float(costs[idx])
             qty = int(quantities[idx])
+            remark = remarks[idx]
 
             # Save item
             PurchaseItem.objects.create(
                 invoice=invoice, product=product,
-                rate=rate, cost=cost, quantity=qty
+                rate=rate, cost=cost, quantity=qty, remark=remark 
             )
 
             # Update or create inventory
             inv, created = Inventory.objects.get_or_create(product=product, defaults={
                 'rate': rate,
                 'cost': cost,
-                'quantity': 0
+                'quantity': 0,
+                'remark': remark
             })
             if not created:
                 inv.quantity += 0
                 inv.rate = rate
                 inv.cost = cost
+                inv.remark = remark
                 inv.save()
 
-        messages.success(request, f"Purchase Invoice #{invoice.id} created.")
+        messages.success(request, f"Purchase Invoice #{invoice.invoice_number} created.")
         return redirect('purchase_list')
 
     products = Product.objects.all()
@@ -232,8 +253,15 @@ def purchase_return_view(request, invoice_id):
 # View sales invoices
 @login_required(login_url="/")
 def sales_list_view(request):
+    now = timezone.now()
+    first_day_of_current_month = now.replace(day=1)
+    current_month_invoices = SalesInvoice.objects.filter(date__gte=first_day_of_current_month)
+    total_sales_current_month = sum(
+        item.total for invoice in current_month_invoices for item in SalesItem.objects.filter(invoice=invoice)
+    )
+
     sales = SalesInvoice.objects.all().order_by('-date')
-    return render(request, 'inventory/sales_list.html', {'sales': sales})
+    return render(request, 'inventory/sales_list.html', {'sales': sales, 'total_sales_current_month': total_sales_current_month})
 
 @login_required(login_url="/")
 @transaction.atomic
@@ -243,25 +271,27 @@ def sales_add_view(request):
         quantities = request.POST.getlist('quantity')
         prices = request.POST.getlist('price')
         tt_value = request.POST.get('tt', '')  # TT is now a text field, can be empty
-        remark = request.POST.get('remark', '')  # Capture the remark
+        remarks = request.POST.getlist('remark') 
 
         # If 'tt' field is provided, store the value, otherwise None
         tt_flag = tt_value if tt_value else None
 
         # Create the sales invoice with optional TT value
-        invoice = SalesInvoice.objects.create(tt=tt_flag, remark=remark)
+        invoice = SalesInvoice.objects.create(tt=tt_flag)
 
         for idx, pid in enumerate(product_ids):
             product = Product.objects.get(id=pid)
             quantity = int(quantities[idx])
             price = float(prices[idx])
+            remark = remarks[idx]
 
             # Create sale item
             SalesItem.objects.create(
                 invoice=invoice,
                 product=product,
                 quantity=quantity,
-                selling_price=price
+                selling_price=price,
+                remark=remark 
             )
 
             # Update inventory
@@ -274,7 +304,7 @@ def sales_add_view(request):
             except Inventory.DoesNotExist:
                 continue  # In case product has no inventory
 
-        messages.success(request, f"Sales Invoice #{invoice.id} created.")
+        messages.success(request, f"Sales Invoice #{invoice.invoice_number} created.")
         return redirect('sales_list')
 
     # Only products with quantity > 0 can be selected
@@ -368,5 +398,5 @@ def purchase_invoice_received_view(request, invoice_id):
     invoice.save()
 
     # Success message and redirect
-    messages.success(request, f"Products for Purchase Invoice #{invoice.id} have been marked as received.")
+    messages.success(request, f"Products for Purchase Invoice #{invoice.invoice_number} have been marked as received.")
     return redirect("purchase_list") 

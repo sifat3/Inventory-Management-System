@@ -1,7 +1,7 @@
 {% extends 'inventory/base.html' %}
 {% block content %}
 <div class="container mt-4" id="invoice">
-  <h2 class="mb-4">Sales Invoice #{{ invoice.id }}</h2>
+  <h2 class="mb-4">Sales Invoice #{{ invoice.invoice_number }}</h2>
   
   <div class="row mb-4">
     <div class="col-md-6">
@@ -23,6 +23,7 @@
         <th>Quantity</th>
         <th>Price</th>
         <th>Total</th>
+        <th>Remark</th>
       </tr>
     </thead>
     <tbody>
@@ -32,6 +33,7 @@
         <td>{{ item.quantity }}</td>
         <td>৳{{ item.selling_price }}</td>
         <td>৳{{ item.total }}</td>
+        <td>{{ item.remark }}</td>
       </tr>
       {% endfor %}
     </tbody>
