@@ -17,7 +17,7 @@
   <body>
     <div class="sidebar">
       {% for message in messages %}
-        <div class="alert 
+        <div class="alert
           {% if message.tags == 'success' %}
             alert-success
           {% elif message.tags == 'error' %}
@@ -38,13 +38,15 @@
         <li><a href="{% url 'purchase_list' %}">Buy</a></li>
         <li><a href="{% url 'sales_list' %}">Sell</a></li>
         {% if user.is_authenticated %}
-        <li><a href="{% url 'logout' %}" class="btn btn-danger mt-3" style="width: 100px;">Logout</a></li>
+        <li><a href="{% url 'logout' %}" class="btn btn-danger mt-3" style="width: 190px;">Logout</a></li>
         {% endif %}
       </ul>
+              <br><br><br><br><br><br><br><br><br>
+    <H5>   Developed By <a href="//www.ibizn.com">IBIZN</a></H5>
     </div>
     <div class="main">
       {% block content %}
       {% endblock %}
     </div>
-  </body>  
+  </body>
 </html>
