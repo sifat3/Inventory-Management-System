@@ -13,12 +13,13 @@
   <table class="table table-bordered table-striped table-hover">
     <thead class="table-dark">
       <tr>
+        <th>Serial No.</th>
         <th>Part Number</th>
         <th>Product</th>
         <th>Rate</th>
         <th>Cost</th>
         <th>Quantity</th>
-        <th>CHS</th>
+        <th>COGS</th>
         <th>Total</th>
         <th>Remark</th>
       </tr>
@@ -26,6 +27,7 @@
     <tbody>
       {% for item in items %}
       <tr>
+        <td>{{ forloop.counter }}</td>
         <td>{{ item.product.part_number }}</td>
         <td>{{ item.product.name }}</td>
         <td>৳{{ item.rate }}</td>

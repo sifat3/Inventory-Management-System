@@ -48,6 +48,7 @@
           <th>Quantity</th>
           <th>Rate</th>
           <th>Cost</th>
+          <th>COGS</th>
           <th>Total</th>
           <th>Location</th>
           <th>Remark</th>
@@ -65,6 +66,7 @@
           <td>৳{{ inventory.rate }}</td>
           <td>৳{{ inventory.cost }}</td>
           <td>৳{{ inventory.chs }}</td>
+          <td>৳{{ inventory.stock_value }}</td>
           <td>
             <form method="POST" action="{% url 'dashboard' %}">
               {% csrf_token %}

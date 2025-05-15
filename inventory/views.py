@@ -292,9 +292,7 @@ def sales_list_view(request):
     query = request.GET.get('q', '')
     if query:
         sales = SalesInvoice.objects.filter(
-            Q(invoice_number__icontains=query) |  # Search in sales invoice number
-            Q(tt__icontains=query)  # Search in TT field
-        ).order_by('-date')
+            Q(invoice_number__icontains=query)).order_by('-date')
     else:
         sales = SalesInvoice.objects.all().order_by('-date')
     now = timezone.now()
