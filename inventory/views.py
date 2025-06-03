@@ -54,7 +54,17 @@ def dashboard_view(request):
     
 
     total_stock_value = sum([inventory.stock_value for inventory in Inventory.objects.all()])
-    total_profit = sum([(sales_item.selling_price - (sales_item.product.inventory.rate + sales_item.product.inventory.cost)) * sales_item.quantity for sales_item in SalesItem.objects.all()])
+
+    total_profit = 0
+    for sale in SalesInvoice.objects.all():
+        # Calculate cost of goods sold for this invoice
+        cogs = sum(
+            (item.product.inventory.rate + item.product.inventory.cost) * item.quantity
+            for item in sale.salesitem_set.all()
+        )
+        profit = sale.final_amount - cogs
+        total_profit += profit
+
     total_expenses = Expense.objects.aggregate(total=models.Sum('amount'))['total'] or 0
 
     # Render the dashboard template with the filtered inventories
@@ -320,12 +330,30 @@ def sales_add_view(request):
         address = request.POST.get('address')
         phone = request.POST.get('phone')
 
+        from decimal import Decimal, InvalidOperation
+
+        discount_str = request.POST.get('discount', '0').strip()
+        amount_paid_str = request.POST.get('amount_paid', '0').strip()
+
+        try:
+            discount = Decimal(discount_str) if discount_str else Decimal('0.00')
+        except InvalidOperation:
+            discount = Decimal('0.00')
+
+        try:
+            amount_paid = Decimal(amount_paid_str) if amount_paid_str else Decimal('0.00')
+        except InvalidOperation:
+            amount_paid = Decimal('0.00')
+
+
+
         # Create SalesInvoice with amount_paid initialized
         invoice = SalesInvoice.objects.create(
             name=name,
             address=address,
             phone=phone,
             amount_paid=amount_paid,
+            discount=discount,
         )
 
         for idx, pid in enumerate(product_ids):

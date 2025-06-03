@@ -1,5 +1,7 @@
 from django.db import models
 import datetime
+from decimal import Decimal
+
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
@@ -101,7 +103,17 @@ class SalesInvoice(models.Model):
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     amount_paid = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     due_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    discount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+
+    @property
     
+    def final_amount(self):
+        # Make sure total_amount and discount are Decimal
+        total = Decimal(self.total_amount)
+        discount = Decimal(self.discount) if self.discount else Decimal('0.00')
+        result = total - discount
+        return result if result > 0 else Decimal('0.00')
+
 
     def __str__(self):
         return f"Sales Invoice #{self.invoice_number}"
@@ -126,11 +138,10 @@ class SalesInvoice(models.Model):
             total = sum(item.total for item in self.salesitem_set.all())
             self.total_amount = total
 
-        # Update due_amount = total_amount - amount_paid
-        self.due_amount = float(self.total_amount) - float(self.amount_paid)
+        # Update due amount based on total after discount
+        self.due_amount = self.final_amount - self.amount_paid
 
         super(SalesInvoice, self).save(*args, **kwargs)
-
 
 
 class SalesItem(models.Model):

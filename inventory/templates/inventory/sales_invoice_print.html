@@ -119,6 +119,12 @@
 
         <div class="grand-total">
             <strong>Grand Total: ৳{{ total }}</strong><br>
+            {% if invoice.discount > 0 %}
+            <h4><strong>Discount: ৳{{ invoice.discount }}</strong></h4>
+            <h4><strong>Final Amount: ৳{{ invoice.total_amount|floatformat:2|add:"-{{ invoice.discount }}" }}</strong></h4>
+            {% else %}
+            <h4><strong>Final Amount: ৳{{ invoice.total_amount }}</strong></h4>
+            {% endif %}
             {% if invoice.due_amount > 0 %}
             <strong>Paid: ৳{{ invoice.amount_paid  }}</strong><br>
             <strong>Due: ৳{{ invoice.due_amount }}</strong>
