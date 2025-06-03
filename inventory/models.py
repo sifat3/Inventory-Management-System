@@ -39,7 +39,7 @@ class Expense(models.Model):
 
 
 class PurchaseInvoice(models.Model):
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateField()
     name = models.CharField(max_length=100)  # Name
     address = models.TextField()  # Address
     phone = models.CharField(max_length=15)  # Phone
@@ -93,7 +93,7 @@ class PurchaseItem(models.Model):
         return self.chs * self.quantity
 
 class SalesInvoice(models.Model):
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateField()
     name = models.CharField(max_length=100)  # Name
     address = models.TextField()  # Address
     phone = models.CharField(max_length=15)  # Phone

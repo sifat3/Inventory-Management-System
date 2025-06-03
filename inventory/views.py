@@ -5,6 +5,8 @@ from .models import Product, Expense, PurchaseInvoice, PurchaseItem, Inventory,S
 from django.contrib import messages
 from django.db import models, transaction
 from django.db.models import Q
+from django.db.models import Sum
+from datetime import datetime
 
 
 
@@ -227,6 +229,7 @@ def purchase_add_view(request):
         costs = request.POST.getlist('cost')
         quantities = request.POST.getlist('quantity')
         remarks = request.POST.getlist('remark')
+        date = request.POST.get('date')
 
         name = request.POST.get('name')
         address = request.POST.get('address')
@@ -239,7 +242,7 @@ def purchase_add_view(request):
             address=address,
             phone=phone,
             source_of_purchase=source_of_purchase,
-            voucher_no=voucher_no
+            voucher_no=voucher_no, date=date
         )
 
         for idx, pid in enumerate(product_ids):
@@ -329,6 +332,7 @@ def sales_add_view(request):
         name = request.POST.get('name')
         address = request.POST.get('address')
         phone = request.POST.get('phone')
+        date = request.POST.get('date')
 
         from decimal import Decimal, InvalidOperation
 
@@ -353,7 +357,7 @@ def sales_add_view(request):
             address=address,
             phone=phone,
             amount_paid=amount_paid,
-            discount=discount,
+            discount=discount, date=date
         )
 
         for idx, pid in enumerate(product_ids):
@@ -497,3 +501,164 @@ def purchase_invoice_received_view(request, invoice_id):
     # Success message and redirect
     messages.success(request, f"Products for Purchase Invoice #{invoice.invoice_number} have been marked as received.")
     return redirect("purchase_list") 
+
+
+
+
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
+from django.shortcuts import render
+from .models import SalesInvoice
+
+@login_required(login_url="/")
+def sales_report_view(request):
+    sales = SalesInvoice.objects.none()
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date and end_date:
+        try:
+            start = datetime.strptime(start_date, '%Y-%m-%d')
+            end = datetime.strptime(end_date, '%Y-%m-%d')
+
+            sales = SalesInvoice.objects.filter(date__date__gte=start, date__date__lte=end).order_by('date')
+        except Exception:
+            sales = SalesInvoice.objects.none()
+
+    context = {
+        'sales': sales,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    return render(request, 'inventory/sales_report.html', context)
+
+
+from django.db.models import Sum, F
+
+@login_required(login_url="/")
+def purchase_report_view(request):
+    purchases = PurchaseInvoice.objects.none()
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date and end_date:
+        try:
+            start = datetime.strptime(start_date, '%Y-%m-%d')
+            end = datetime.strptime(end_date, '%Y-%m-%d')
+
+            purchases = PurchaseInvoice.objects.filter(
+                date__date__gte=start,
+                date__date__lte=end
+            ).annotate(
+                total_amount=Sum(F('purchaseitem__quantity') * F('purchaseitem__rate'))
+            )
+        except ValueError:
+            purchases = PurchaseInvoice.objects.none()
+
+    context = {
+        'purchases': purchases,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    return render(request, 'inventory/purchase_report.html', context)
+
+
+
+from django.db.models import Sum
+
+@login_required(login_url="/")
+def expense_report_view(request):
+    expenses = Expense.objects.none()
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    total_amount = 0
+
+    if start_date and end_date:
+        try:
+            start = datetime.strptime(start_date, '%Y-%m-%d')
+            end = datetime.strptime(end_date, '%Y-%m-%d')
+
+            expenses = Expense.objects.filter(date__gte=start, date__lte=end).order_by('date')
+
+            total_amount = expenses.aggregate(total=Sum('amount'))['total'] or 0
+        except ValueError:
+            expenses = Expense.objects.none()
+            total_amount = 0
+
+    context = {
+        'expenses': expenses,
+        'total_amount': total_amount,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
+    return render(request, 'inventory/expense_report.html', context)
+
+
+from django.db.models import F, ExpressionWrapper, DecimalField, Sum
+from datetime import datetime
+
+@login_required(login_url="/")
+def inventory_report_view(request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    purchases = PurchaseInvoice.objects.none()
+    sales = SalesInvoice.objects.none()
+    expenses = Expense.objects.none()
+
+    total_buy = total_sell = total_expenses = total_profit = 0
+
+    if start_date and end_date:
+        try:
+            start = datetime.strptime(start_date, '%Y-%m-%d')
+            end = datetime.strptime(end_date, '%Y-%m-%d')
+
+            # Filter the invoices by date range for display
+            purchases = PurchaseInvoice.objects.filter(date__gte=start, date__lte=end)
+            sales = SalesInvoice.objects.filter(date__gte=start, date__lte=end)
+            expenses = Expense.objects.filter(date__gte=start, date__lte=end)
+
+            # Calculate total purchase amount by summing (quantity * rate) over purchase items
+            total_buy = PurchaseInvoice.objects.filter(date__gte=start, date__lte=end).annotate(
+                invoice_total=Sum(
+                    ExpressionWrapper(
+                        F('purchaseitem__quantity') * F('purchaseitem__rate'),
+                        output_field=DecimalField()
+                    )
+                )
+            ).aggregate(total=Sum('invoice_total'))['total'] or 0
+
+            # Calculate total sales amount similarly
+            total_sell = SalesInvoice.objects.filter(date__gte=start, date__lte=end).annotate(
+                invoice_total=Sum(
+                    ExpressionWrapper(
+                        F('salesitem__quantity') * F('salesitem__selling_price'),
+                        output_field=DecimalField()
+                    )
+                )
+            ).aggregate(total=Sum('invoice_total'))['total'] or 0
+
+            total_expenses = expenses.aggregate(total=Sum('amount'))['total'] or 0
+
+            total_profit = total_sell - total_buy - total_expenses
+
+        except ValueError:
+            purchases = SalesInvoice.objects.none()
+            sales = SalesInvoice.objects.none()
+            expenses = Expense.objects.none()
+            total_buy = total_sell = total_expenses = total_profit = 0
+
+    return render(request, 'inventory/inventory_report.html', {
+        'purchases': purchases,
+        'sales': sales,
+        'expenses': expenses,
+        'total_buy': total_buy,
+        'total_sell': total_sell,
+        'total_expenses': total_expenses,
+        'total_profit': total_profit,
+        'start_date': start_date,
+        'end_date': end_date,
+    })
+
+

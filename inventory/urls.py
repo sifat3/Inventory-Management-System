@@ -26,5 +26,9 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
     path('purchase/invoice/received/<int:invoice_id>/', views.purchase_invoice_received_view, name='purchase_invoice_received'),
     path('sell/<int:invoice_id>/due_received/', views.sales_due_received_view, name='sales_due_received'),
+    path('sell/report/', views.sales_report_view, name='sales_report'),
+    path('buy/report/', views.purchase_report_view, name='purchase_report'),
+    path('expenses/report/', views.expense_report_view, name='expense_report'),
+    path('inventory/report/', views.inventory_report_view, name='inventory_report'),
 
 ]

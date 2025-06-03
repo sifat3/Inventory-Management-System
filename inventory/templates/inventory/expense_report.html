@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Expense Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    form {
+      background: #fff;
+      padding: 15px 20px;
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
+      display: inline-block;
+    }
+    label {
+      margin-right: 8px;
+      font-weight: bold;
+    }
+    input[type="date"] {
+      margin-right: 15px;
+      padding: 5px 8px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+    button {
+      background: #3498db;
+      border: none;
+      color: white;
+      padding: 7px 15px;
+      font-size: 14px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    ul.expense-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    ul.expense-list li {
+      background: #fff;
+      margin-bottom: 12px;
+      padding: 15px 20px;
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    ul.expense-list li span.label {
+      font-weight: 600;
+      color: #555;
+      display: inline-block;
+      width: 130px;
+    }
+    #print-btn {
+      margin-top: 20px;
+      background: #27ae60;
+    }
+    #print-btn:hover {
+      background: #1e8449;
+    }
+    @media print {
+      form, #print-btn {
+        display: none;
+      }
+      body {
+        background: white;
+        color: black;
+        margin: 10mm;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>Expense Report</h2>
+
+  <form method="get">
+    <label for="start_date">Start Date:</label>
+    <input type="date" id="start_date" name="start_date" value="{{ start_date }}">
+    <label for="end_date">End Date:</label>
+    <input type="date" id="end_date" name="end_date" value="{{ end_date }}">
+    <button type="submit">Show Report</button>
+  </form>
+
+
+  {% if start_date and end_date %}
+  <p><strong>Report Date Range:</strong> {{ start_date }} to {{ end_date }}</p>
+{% endif %}
+
+  {% if expenses %}
+    <ul class="expense-list">
+      {% for expense in expenses %}
+        <li>
+          <span class="label">Date:</span> {{ expense.date|date:"Y-m-d" }}<br>
+          <span class="label">Reason:</span> {{ expense.reason }}<br>
+          <span class="label">Amount:</span> ৳{{ expense.amount }}
+        </li>
+      {% endfor %}
+    </ul>
+
+    <p><strong>Total Expenses: ৳{{ total_amount }}</strong></p>
+
+    <button id="print-btn" onclick="window.print()">Print Report</button>
+  {% else %}
+    <p>No expenses found for the selected date range.</p>
+  {% endif %}
+</body>
+</html>
