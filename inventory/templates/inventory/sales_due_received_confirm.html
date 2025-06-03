@@ -1,0 +1,9 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h3>Confirm receiving due payment of ৳{{ invoice.due_amount }} for Sales Invoice #{{ invoice.invoice_number }}?</h3>
+<form method="POST">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-success">Confirm Received</button>
+  <a href="{% url 'sales_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

@@ -97,29 +97,37 @@ class SalesInvoice(models.Model):
     phone = models.CharField(max_length=15)  # Phone
     invoice_number = models.CharField(max_length=20, unique=True, blank=True)
 
+    # Added fields to track payments and due
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    amount_paid = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    due_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    
 
     def __str__(self):
         return f"Sales Invoice #{self.invoice_number}"
 
     def save(self, *args, **kwargs):
-        # Generate the invoice number only if it's a new instance (no invoice_number set yet)
         if not self.invoice_number:
-            # Get the current year and month
             year = str(datetime.datetime.now().year)[2:]  # Last 2 digits of the year
-            month = datetime.datetime.now().strftime('%m')  # 2-digit month
+            month = datetime.datetime.now().strftime('%m') 
             prefix = 'S'  # Sales invoice prefix
 
-            # Get the last invoice number to generate the next serial number
             last_invoice = SalesInvoice.objects.filter(date__year=datetime.datetime.now().year).order_by('-id').first()
 
             if last_invoice:
-                # Get the last serial number and increment it by 1
                 serial_number = int(last_invoice.invoice_number[-2:]) + 1
             else:
-                serial_number = 1  # If no invoices exist, start from 1
+                serial_number = 1
 
-            # Format the invoice number (S2505X18)
             self.invoice_number = f"{prefix}{year}{month}{str(serial_number).zfill(2)}"
+
+        # Update total_amount based on related SalesItems if the invoice exists
+        if self.pk:
+            total = sum(item.total for item in self.salesitem_set.all())
+            self.total_amount = total
+
+        # Update due_amount = total_amount - amount_paid
+        self.due_amount = float(self.total_amount) - float(self.amount_paid)
 
         super(SalesInvoice, self).save(*args, **kwargs)
 

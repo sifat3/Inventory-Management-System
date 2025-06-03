@@ -39,7 +39,10 @@
     </tbody>
   </table>
 
-  <h4><strong>Grand Total: ৳{{ total }}</strong></h4>
+  <h4><strong>Total Amount: ৳{{ invoice.total_amount }}</strong></h4>
+  <h5><strong>Amount Paid: ৳{{ invoice.amount_paid }}</strong></h5>
+  <h5><strong>Due Amount: ৳{{ invoice.due_amount }}</strong></h5>
+
   
   <!-- Link to print the invoice -->
   <a href="{% url 'sales_invoice_print' invoice.id %}" class="btn btn-primary">Print Invoice</a>

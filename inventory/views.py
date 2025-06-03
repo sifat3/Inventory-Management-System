@@ -311,14 +311,22 @@ def sales_add_view(request):
         quantities = request.POST.getlist('quantity')
         prices = request.POST.getlist('price')
         remarks = request.POST.getlist('remark')
-        it_numbers = request.POST.getlist('it_no') 
+        it_numbers = request.POST.getlist('it_no')
+        
+        # Get initial amount paid, default 0 if not provided
+        amount_paid = float(request.POST.get('amount_paid', 0))
 
         name = request.POST.get('name')
         address = request.POST.get('address')
         phone = request.POST.get('phone')
-        invoice = SalesInvoice.objects.create(name=name,
+
+        # Create SalesInvoice with amount_paid initialized
+        invoice = SalesInvoice.objects.create(
+            name=name,
             address=address,
-            phone=phone)
+            phone=phone,
+            amount_paid=amount_paid,
+        )
 
         for idx, pid in enumerate(product_ids):
             product = Product.objects.get(id=pid)
@@ -334,7 +342,7 @@ def sales_add_view(request):
                 quantity=quantity,
                 selling_price=price,
                 remark=remark,
-                it_no=it_no 
+                it_no=it_no
             )
 
             # Update inventory
@@ -345,14 +353,32 @@ def sales_add_view(request):
                     inventory.quantity = 0
                 inventory.save()
             except Inventory.DoesNotExist:
-                continue  # In case product has no inventory
+                continue
 
-        messages.success(request, f"Sales Invoice #{invoice.invoice_number} created.")
+        # Save invoice to update total_amount and due_amount
+        invoice.save()
+
+        messages.success(request, f"Sales Invoice #{invoice.invoice_number} created with due ৳{invoice.due_amount}.")
         return redirect('sales_list')
 
-    # Only products with quantity > 0 can be selected
     products = Inventory.objects.filter(quantity__gt=0).select_related('product')
     return render(request, 'inventory/sales_add.html', {'products': products})
+
+@login_required(login_url="/")
+def sales_due_received_view(request, invoice_id):
+    invoice = get_object_or_404(SalesInvoice, id=invoice_id)
+    if invoice.due_amount <= 0:
+        messages.info(request, "No due payment pending for this invoice.")
+        return redirect('sales_list')
+
+    if request.method == 'POST':
+        invoice.amount_paid += invoice.due_amount
+        invoice.due_amount = 0.00
+        invoice.save()
+        messages.success(request, f"Due payment for Invoice #{invoice.invoice_number} received successfully.")
+        return redirect('sales_list')
+
+    return render(request, 'inventory/sales_due_received_confirm.html', {'invoice': invoice})
 
 # Return a sale (restock inventory)
 @login_required(login_url="/")

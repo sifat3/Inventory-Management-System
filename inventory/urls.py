@@ -24,5 +24,7 @@ urlpatterns = [
     path('sales/invoice/print/<int:invoice_id>/', views.sales_invoice_print_view, name='sales_invoice_print'),
     path('purchase/invoice/print/<int:invoice_id>/', views.purchase_invoice_print_view, name='purchase_invoice_print'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
-    path('purchase/invoice/received/<int:invoice_id>/', views.purchase_invoice_received_view, name='purchase_invoice_received'),\
+    path('purchase/invoice/received/<int:invoice_id>/', views.purchase_invoice_received_view, name='purchase_invoice_received'),
+    path('sell/<int:invoice_id>/due_received/', views.sales_due_received_view, name='sales_due_received'),
+
 ]
