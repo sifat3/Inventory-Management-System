@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Purchase Invoice #{{ invoice.id }}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: black;
+      font-size: 14px; /* smaller font */
+    }
+
+    .invoice-container {
+      width: 90%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      /* Only top and bottom borders */
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 24px; /* slightly smaller */
+      margin-bottom: 20px;
+    }
+
+    .invoice-details {
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .invoice-details p {
+      margin: 4px 0;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      font-size: 13px; /* smaller font */
+    }
+
+    table th,
+    table td {
+      padding: 8px;
+      text-align: left;
+      /* Darker, deeper border */
+      border: 2px solid #444;
+    }
+
+    table th {
+      background-color: #f8f9fa;
+      font-weight: bold;
+    }
+
+    .grand-total {
+      text-align: right;
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    @media print {
+      button {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class=""><br><br><br><br><br><br><br><br><br><br><br><br>
+    <h2>Purchase Invoice #{{ invoice.invoice_number }}</h2>
+
+    <div class="invoice-details">
+      <p><strong>Date:</strong> {{ invoice.date }}</p>
+      <p><strong>Name:</strong> {{ invoice.name }}</p>
+      <p><strong>Address:</strong> {{ invoice.address }}</p>
+      <p><strong>Phone:</strong> {{ invoice.phone }}</p>
+      <p><strong>Source of Purchase:</strong> {{ invoice.source_of_purchase }}</p>
+      <p><strong>Voucher No.:</strong> {{ invoice.voucher_no }}</p>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Serial No.</th>
+          <th>Part Number</th>
+          <th>Product</th>
+          <th>A/U</th>
+          <th>Vehicle</th>
+          <th>Rate</th>
+          <th>Cost</th>
+          <th>COGS</th>
+          <th>Quantity</th>
+          <th>Total</th>
+          <th>Remark</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>{{ forloop.counter }}</td>  
+          <td>{{ item.product.part_number }}</td>
+          <td>{{ item.product.name }}</td>
+          <td>{% if item.product.au %}Set{% else %}No{% endif %}</td>
+          <td>{{ item.product.vehicle }}</td>
+          <td>৳{{ item.rate }}</td>
+          <td>৳{{ item.cost }}</td>
+          <td>৳{{ item.chs }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>৳{{ item.total }}</td>
+          <td>{{ item.remark }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="grand-total">
+      <strong>Grand Total: ৳{{ total }}</strong>
+    </div>
+
+    <button onclick="window.print()" class="btn btn-primary">Print Invoice</button>
+  </div>
+</body>
+</html>

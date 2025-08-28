@@ -1,0 +1,37 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Product List</h2>
+
+  <form method="GET" action="{% url 'product_list' %}">
+    <div class="mb-4">
+      <input type="text" name="q" class="form-control" placeholder="Search Products" value="{{ request.GET.q }}" aria-label="Search Products">
+    </div>
+  </form>
+
+  <a href="{% url 'product_add' %}" class="btn btn-success mb-3">Add New Product</a>
+  <table class="table table-bordered table-hover table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Serial No.</th>
+        <th>Part Number</th>
+        <th>Product Name</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ product.part_number }}</td>
+        <td>{{ product.name }}</td>
+        <td>
+          <a href="{% url 'product_edit' product.id %}" class="btn btn-primary btn-sm">Edit</a>
+          <a href="{% url 'product_delete' product.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

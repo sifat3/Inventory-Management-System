@@ -1,0 +1,99 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="container-fluid">
+  <h2 class="mb-4">Dashboard</h2>
+
+    <form method="GET" action="{% url 'dashboard' %}">
+    <div class="mb-4">
+      <input type="text" name="q" class="form-control" placeholder="Search Inventory" value="{{ request.GET.q }}" aria-label="Search Inventory">
+    </div>
+  </form>
+
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card text-white bg-success">
+        <div class="card-body">
+          <h5 class="card-title">Stock Value</h5>
+          <p class="card-text">৳{{ total_stock_value }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-primary">
+        <div class="card-body">
+          <h5 class="card-title">Profit</h5>
+          <p class="card-text">৳{{ total_profit }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-danger">
+        <div class="card-body">
+          <h5 class="card-title">Expenses</h5>
+          <p class="card-text">৳{{ total_expenses }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <a href="{% url 'sales_report' %}" class="btn btn-primary w-100 mb-2 py-1" style="font-size: 0.85rem;">Sales Report</a>
+  <a href="{% url 'purchase_report' %}" class="btn btn-success w-100 mb-2 py-1" style="font-size: 0.85rem;">Purchase Report</a>
+  <a href="{% url 'expense_report' %}" class="btn btn-danger w-100 mb-2 py-1" style="font-size: 0.85rem;">Expense Report</a>
+  <a href="{% url 'inventory_report' %}" class="btn btn-info w-100 mb-2 py-1" style="font-size: 0.85rem;">Inventory Report</a>
+
+
+
+
+
+  <h4>Current Inventory</h4>
+    <table class="table table-bordered table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Serial No.</th>
+          <th>Part Number</th>
+          <th>Product Name</th>
+          <th>A/U</th>
+          <th>Vehicle</th>
+          <th>Quantity</th>
+          <th>Rate</th>
+          <th>Cost</th>
+          <th>COGS</th>
+          <th>Total</th>
+          <th>Location</th>
+          <th>Remark</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inventory in inventories %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ inventory.product.part_number }}</td>
+          <td>{{ inventory.product.name }}</td>
+          <td>{% if inventory.product.au %}Set{% else %}No{% endif %}</td>
+          <td>{{ inventory.product.vehicle }}</td>
+          <td>{{ inventory.quantity }}</td>
+          <td>৳{{ inventory.rate }}</td>
+          <td>৳{{ inventory.cost }}</td>
+          <td>৳{{ inventory.chs }}</td>
+          <td>৳{{ inventory.stock_value }}</td>
+          <td>
+            <form method="POST" action="{% url 'dashboard' %}">
+              {% csrf_token %}
+              <input type="hidden" name="inventory_id" value="{{ inventory.id }}">
+              <input type="text" name="location" value="{{ inventory.location }}" class="form-control" placeholder="Update location">
+              <button type="submit" name="update_location" class="btn btn-sm btn-primary mt-2">Update Location</button>
+            </form>
+          </td>
+          <td>{{ inventory.remark }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" class="text-center">No products found with quantity > 0</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </table>
+</div>
+{% endblock %}

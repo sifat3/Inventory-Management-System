@@ -1,0 +1,24 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h2>Edit Product</h2>
+<form method="POST">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label class="form-label">Product Name:</label>
+    <input type="text" class="form-control" name="name" value="{{ product.name }}" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Part Number:</label>
+    <input type="text" class="form-control" name="part_number" value="{{ product.part_number }}" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">A/U:</label>
+    <input type="checkbox" name="au" class="form-check-input" {% if product.au %}checked{% endif %}> Yes
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Vehicle:</label>
+    <input type="text" class="form-control" name="vehicle" value="{{ product.vehicle }}">
+  </div>
+  <button type="submit" class="btn btn-primary">Update Product</button>
+</form>
+{% endblock %}

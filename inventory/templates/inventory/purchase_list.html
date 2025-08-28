@@ -1,0 +1,49 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Purchase Invoices</h2>
+
+
+    <form method="GET" action="{% url 'purchase_list' %}">
+    <div class="mb-4">
+      <input type="text" name="q" class="form-control" placeholder="Search Purchases" value="{{ request.GET.q }}" aria-label="Search Purchases">
+    </div>
+  </form>
+
+  <div class="alert alert-info">
+    <strong>Total Purchase for the Current Month:</strong> ৳{{ total_purchase_current_month }}
+  </div>
+
+  <a href="{% url 'purchase_add' %}" class="btn btn-success mb-3">Add New Purchase</a>
+  <table class="table table-bordered table-hover table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Serial No.</th>
+        <th>Invoice</th>
+        <th>Date</th>
+        <th>Source Of Purchase</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for invoice in purchases %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ invoice.invoice_number }}</td>
+        <td>{{ invoice.date }}</td>
+        <td>{{ invoice.source_of_purchase }}</td>
+        <td>
+          <a href="{% url 'purchase_invoice' invoice.id %}" class="btn btn-info btn-sm">View</a>
+          <a href="{% url 'purchase_return' invoice.id %}" class="btn btn-warning btn-sm">Return</a>
+          {% if invoice.received == False %}
+            <!-- Only show the "Received" button if the item has not been received -->
+            <a href="{% url 'purchase_invoice_received' invoice.id %}" class="btn btn-success btn-sm">Received</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+

@@ -1,0 +1,181 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Add Sale</h2>
+
+  <!-- Add Sale Form -->
+  <form method="POST" class="card p-4 shadow-sm">
+    {% csrf_token %}
+    
+    <!-- Product Section -->
+    <div id="product-section">
+      <div class="product-row mb-3">
+        <div class="row">
+          <div class="col-md-4">
+            <label for="product" class="form-label">Product</label>
+            <input list="products" name="product" id="product" class="form-control" required placeholder="Search for a product">
+            <datalist id="products">
+              {% for p in products %}
+                <option value="{{ p.product.id }}" label="{{ p.product.name }}-{{p.product.part_number}} (Available: {{ p.quantity }})">
+              {% endfor %}
+            </datalist>
+          </div>
+          
+          <div class="col-md-3">
+            <label for="price" class="form-label">Selling Price</label>
+            <input type="number" name="price" class="form-control" placeholder="Selling Price" required>
+          </div>
+
+          <div class="col-md-3">
+            <label for="quantity" class="form-label">Quantity</label>
+            <input type="number" name="quantity" class="form-control" placeholder="Quantity" required>
+          </div>
+
+          <div class="col-md-2">
+            <label for="remark" class="form-label">Remark</label>
+            <input type="text" name="remark" class="form-control" placeholder="Remark">
+          </div>
+            
+          <div class="col-md-2"><br>
+            <label for="it_no" class="form-label">IT No.</label>
+            <input type="text" name="it_no" class="form-control" placeholder="IT No.">
+          </div>
+
+          <div class="col-md-2 d-flex align-items-end">
+            <button type="button" class="btn btn-danger remove-btn" onclick="removeRow(this)">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Another Product Button -->
+    <div class="text-center">
+      <button type="button" class="btn btn-secondary" onclick="addRow()">Add Another Product</button>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-4">
+        <label for="name">Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Customer Name" >
+      </div>
+
+      <div class="col-md-4">
+        <label for="address">Address</label>
+        <input type="text" name="address" class="form-control" placeholder="Customer Address" >
+      </div>
+
+      <div class="col-md-4">
+        <label for="phone">Phone</label>
+        <input type="text" name="phone" class="form-control" placeholder="Customer Phone" >
+      </div>
+      <div class="col-md-4">
+        <label for="amount_paid" class="form-label">Initial Payment (৳):</label>
+        <input type="number" name="amount_paid" class="form-control" step="0.01" min="0" placeholder="Enter amount paid" required>
+      </div>
+      <div class="col-md-4">
+        <label for="date">Transaction Date:</label>
+        <input type="date" id="date" class="form-control" name="date" required />
+      </div>
+      <div class="col-md-4">
+        <label for="discount" class="form-label">Discount (৳):</label>
+        <input type="number" name="discount" class="form-control" step="0.01" min="0" placeholder="Enter discount amount">
+      </div>
+    </div>
+
+
+    <!-- Submit Button -->
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-primary">Submit Sale</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Function to add another product row
+  function addRow() {
+    const section = document.getElementById('product-section');
+    const row = section.querySelector('.product-row').cloneNode(true);
+
+    // Clear input values in the new row
+    const inputs = row.querySelectorAll('input');
+    inputs.forEach(input => input.value = '');
+
+    section.appendChild(row);
+  }
+
+  // Function to remove a product row
+  function removeRow(button) {
+    const section = document.getElementById('product-section');
+    if (section.querySelectorAll('.product-row').length > 1) {
+      button.parentElement.parentElement.remove();
+    } else {
+      alert("At least one product row must remain.");
+    }
+  }
+</script>
+
+{% block extra_css %}
+<style>
+  /* Custom Styling for the page */
+  .container {
+    max-width: 800px;
+  }
+
+  h2 {
+    font-size: 32px;
+    color: #333;
+  }
+
+  .card {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-label {
+    font-size: 14px;
+  }
+
+  .form-control {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .btn {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+
+  /* Remove button style */
+  .remove-btn {
+    width: 100%;
+    font-size: 14px;
+    padding: 6px 10px;
+    text-align: center;
+    background-color: #e74c3c;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+
+  .remove-btn:hover {
+    background-color: #c0392b;
+  }
+
+  /* Style for 'Add Another Product' and Submit buttons */
+  .btn-secondary {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+
+  .btn-primary {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+
+  /* Styling for the TT text field */
+  .form-control {
+    margin-top: 10px;
+  }
+</style>
+{% endblock %}
+{% endblock %}

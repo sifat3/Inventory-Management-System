@@ -1,0 +1,94 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="container mt-4" id="invoice">
+  <h2 class="mb-4">Purchase Invoice #{{ invoice.invoice_number }}</h2>
+  
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <p><strong>Date:</strong> {{ invoice.date }}</p>
+    </div>
+  </div>
+
+  <!-- Table for items -->
+  <table class="table table-bordered table-striped table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Serial No.</th>
+        <th>Part Number</th>
+        <th>Product</th>
+        <th>Rate</th>
+        <th>Cost</th>
+        <th>Quantity</th>
+        <th>COGS</th>
+        <th>Total</th>
+        <th>Remark</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ item.product.part_number }}</td>
+        <td>{{ item.product.name }}</td>
+        <td>৳{{ item.rate }}</td>
+        <td>৳{{ item.cost }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>৳{{ item.chs }}</td>
+        <td>৳{{ item.total }}</td>
+        <td>{{ item.remark }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h4><strong>Grand Total: ৳{{ total }}</strong></h4>
+  
+  <!-- Link to print the invoice -->
+  <a href="{% url 'purchase_invoice_print' invoice.id %}" class="btn btn-primary">Print Invoice</a>
+</div>
+
+{% block extra_css %}
+<style>
+  @media print {
+    /* Hide elements not necessary for printing */
+    .sidebar, .main, button {
+      display: none;
+    }
+
+    #invoice {
+      width: 100%;
+      padding: 20px;
+      background: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    table th, table td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+
+    h2 {
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    h4 {
+      font-size: 22px;
+      color: #28a745;
+    }
+
+    button {
+      display: none;
+    }
+  }
+</style>
+{% endblock %}
+{% endblock %}

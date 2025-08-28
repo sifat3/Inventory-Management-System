@@ -1,0 +1,9 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<h3>Are you sure you want to return Sales Invoice #{{ invoice.id }}?</h3>
+<form method="POST">
+  {% csrf_token %}
+  <button type="submit">Yes, Return</button>
+  <a href="{% url 'sales_list' %}">Cancel</a>
+</form>
+{% endblock %}

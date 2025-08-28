@@ -1,0 +1,64 @@
+{% extends 'inventory/base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Login</h2>
+
+  <form method="POST" class="card p-4 shadow-sm">
+    {% csrf_token %}
+    
+    <div class="mb-3">
+      <label for="username" class="form-label">Username:</label>
+      <input type="text" name="username" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="password" class="form-label">Password:</label>
+      <input type="password" name="password" class="form-control" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Login</button>
+
+    {% if error %}
+      <div class="alert alert-danger mt-3">
+        <strong>Error:</strong> {{ error }}
+      </div>
+    {% endif %}
+  </form>
+</div>
+
+{% block extra_css %}
+<style>
+  /* Custom Styles */
+  body {
+    background-color: #f8f9fa;
+  }
+
+  .container {
+    max-width: 400px;
+  }
+
+  h2 {
+    font-size: 32px;
+    color: #333;
+  }
+
+  .card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn {
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  .alert {
+    font-size: 14px;
+  }
+
+  .form-control {
+    font-size: 16px;
+  }
+</style>
+{% endblock %}
+{% endblock %}
